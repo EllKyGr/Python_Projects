@@ -88,6 +88,31 @@ def initial_deposit() -> int:
     return deposit
 
 
+def get_number_lines() -> int:
+    """
+    How many lines does the user wants to bet in:
+    - 1 line i.e. the top line,
+    - 2 lines i.e. top and middle line,
+    - 3 lines i.e. all of them.
+
+    :return: the number of lines bet in
+    :rtype: int
+    """
+    while True:
+        lines: Any = input(f"Enter number of lines ({MIN_LINES}-{MAX_LINES}) ")
+        if not lines.isdigit():
+            print("Invalid entry.")
+            continue
+
+        lines = int(lines)
+        if MIN_LINES <= lines <= MAX_LINES:
+            break
+        else:
+            print("Enter a valid number of lines.")
+
+    return lines
+
+
 def set_bet(funds: int, lines: int) -> list[int]:
     """
     Set the amount of money the user is willing to bet.
@@ -99,7 +124,7 @@ def set_bet(funds: int, lines: int) -> list[int]:
     :return: the bet and remaining funds.
     :rtype: list[int]
     """
-    while True:  # Save the first bet value if you don't want to change it
+    while True:  # TODO: Save first bet value if user wants to keep it
         bet: Any = input("How much would you want to bet on each line? ")
         if not bet.isdigit():
             print("Invalid entry.")
@@ -198,6 +223,22 @@ def pull_lever() -> list[list]:
     return reel_outcome
 
 
+def multiplier_bonus(symbol: str) -> int:
+    """
+    The bonus applied to the bet based on value of the symbol
+
+    :return: value of the symbol
+    :rtype: int
+    """
+    multiplier: int = 0
+    for data in SYMBOLS.values():
+        if symbol == data["unicode"]:
+            value: Any = data["value"]
+            multiplier = value
+
+    return multiplier
+
+
 def jackpot(all_reels: list[list], bet: int, lines: int) -> list:
     """
     Assess the combinations from the spin in order to return, if any, earnings.
@@ -254,7 +295,8 @@ def bet_or_cash(funds: int) -> int:
             new_funds, w_lines = jackpot(pull_lever(), bet, lines)
             funds = current_funds + new_funds
             print(f"You're new funds are ${funds}.")
-            print("You won on lines", *w_lines)
+            if len(w_lines) > 0:
+                print("You won on lines", *w_lines)
         else:
             continue
     return funds
