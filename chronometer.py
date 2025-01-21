@@ -74,6 +74,9 @@ def register_valid_time(set_unit: str) -> list[int]:
             if not check_unit(unit, int(value), timer) is True:
                 print(f"Value exceed max number of {unit}!")
                 continue
+            if timer[0] == 24:
+                timer += [0, 0]
+                return timer
             break
 
     return timer
@@ -111,12 +114,11 @@ def start_chronometer(user_set_time: list[int]):
     :param user_set_time: return value from `set_time_lapse()`
     :type user_set_time: list[int]
     """
-    str_hour = "0" + str(user_set_time[0]) if user_set_time[0] < 10 else str(
-        user_set_time[0])
-    str_min = "0" + str(user_set_time[1]) if user_set_time[1] < 10 else str(
-        user_set_time[1])
-    str_sec = "0" + str(user_set_time[2]) if user_set_time[2] < 10 else str(
-        user_set_time[2])
+    hours, minutes, seconds = user_set_time
+
+    str_hour = "0" + str(hours) if hours < 10 else str(hours)
+    str_min = "0" + str(minutes) if minutes < 10 else str(minutes)
+    str_sec = "0" + str(seconds) if seconds < 10 else str(seconds)
 
     for _ in range(2):
         print(f"\a{str_hour}:{str_min}:{str_sec}", end="\r")
@@ -132,6 +134,7 @@ def chronometer(user_timer: list[int]) -> None:
     :type user_timer: list[int]
     """
     hours, minutes, seconds = user_timer
+
     while True:
         str_hour = "0" + str(hours) if hours < 10 else str(hours)
         str_min = "0" + str(minutes) if minutes < 10 else str(minutes)
