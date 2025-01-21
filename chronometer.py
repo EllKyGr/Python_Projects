@@ -35,72 +35,74 @@ def max_time_measure(hour: int = 0, minute: int = 0, second: int = 0) -> bool:
     return True
 
 
-def set_hours():
+def check_unit(unit: str, value: int, timer: list[int]) -> bool | None:
     """
-    Return hours and lesser time values if applicable
+    Verifies if entered value by user do not exceed time limit
 
-    :return: List containing user entered values
+    :param unit: name of time unit
+    :type unit: str
+    :param value: numerical value entered by user
+    :type value: int
+    :param timer: list containing the time unit values
+    :type timer: list[int]
+
+    :return: True | None
+    :rtype: bool | NoneType
+    """
+    valid: bool | None = None
+
+    match unit:
+        case 'hours':
+            if max_time_measure(hour=int(value)) is True:
+                timer.append(int(value))
+                valid = True
+        case 'minutes':
+            if max_time_measure(minute=int(value)) is True:
+                timer.append(int(value))
+                valid = True
+        case 'seconds':
+            if max_time_measure(second=int(value)) is True:
+                timer.append(int(value))
+                valid = True
+
+    return valid
+
+
+def register_valid_time(set_unit: str) -> list[int]:
+    """
+    Establish values for every field
+
+    :param set_units: highest user entered time unit
+    :type set_units: str
+    :return: list containing default time units or entered by user
     :rtype: list[int]
     """
-    while True:
-        user_hours = input("How many hours: ")
-        if not user_hours.isdigit():
-            print("Invalid. Only enter numbers!")
-            continue
-        if max_time_measure(hour=int(user_hours)) is False:
-            print("Timer cannot be set higher than 24 hrs!")
-            continue
-        hours, minutes, seconds = set_minutes()
-        hours = int(user_hours)
-        break
+    measure: list[str] = ["hours", "minutes", "seconds"]
+    timer: list[int] = []
+    if set_unit == 'H':
+        measure = measure[:]
+    elif set_unit == 'M':
+        measure = measure[1:]
+        timer += [0]
+    else:
+        measure = measure[2:]
+        timer += [0, 0]
 
-    return [hours, minutes, seconds]
+    for unit in measure:
+        while True:
+            value = input(f"Enter {unit}: ")
+            if not value.isdigit():
+                print("Invalid. Only enter numbers!")
+                continue
+            if not check_unit(unit, int(value), timer) is True:
+                print(f"Value exceed max number of {unit}!")
+                continue
+            break
 
-
-def set_minutes():
-    """
-    Return minutes and seconds. Hour value is set 0 by default.
-
-    :return: List containing user entered values
-    :rtype: list[int]
-    """
-    while True:
-        user_minutes = input("How many minutes: ")
-        if not user_minutes.isdigit():
-            print("Invalid. Only enter numbers!")
-            continue
-        if max_time_measure(minute=int(user_minutes)) is False:
-            print("Value exceed max number of minutes!")
-            continue
-        hours, minutes, seconds = set_seconds()
-        minutes = int(user_minutes)
-        break
-
-    return [hours, minutes, seconds]
+    return timer
 
 
-def set_seconds():
-    """
-    Return seconds. Hour and minutes values are set '0' by default.
-
-    :return: List containing user entered values
-    :rtype: list[int]
-    """
-    while True:
-        user_seconds = input("How many seconds: ")
-        if not user_seconds.isdigit():
-            print("Invalid. Only enter numbers!")
-            continue
-        if max_time_measure(minute=int(user_seconds)) is False:
-            print("Value exceed max number of seconds!")
-            continue
-        seconds = int(user_seconds)
-        break
-
-    return [0, 0, seconds]
-
-
-def set_time_values() -> list[int]:
+def set_time_lapse() -> list[int]:
     """
     Ask and arrange user required time lapse
 
@@ -108,15 +110,15 @@ def set_time_values() -> list[int]:
     :rtype: list[int]
     """
     user_input: str | None = None
-    timer: list[int] = [0, 0, 0]
+    timer: list[int] = []
     while True:
         user_input = input("Enter hours, minutes or seconds [H/M/S] ")
         if user_input == "H":
-            timer = set_hours()
+            timer = register_valid_time('H')
         elif user_input == "M":
-            timer = set_minutes()
+            timer = register_valid_time('M')
         elif user_input == "S":
-            timer = set_seconds()
+            timer = register_valid_time('S')
         else:
             print("Invalid command!")
             continue
@@ -129,7 +131,7 @@ def start_chronometer(user_set_time: list[int]):
     """
     Outputs initial timer before starting countdown
 
-    :param user_set_time: return value from `set_time_values()`
+    :param user_set_time: return value from `set_time_lapse()`
     :type user_set_time: list[int]
     """
     str_hour = "0" + str(user_set_time[0]) if user_set_time[0] < 10 else str(
@@ -149,7 +151,7 @@ def chronometer(user_timer: list[int]) -> None:
     """
     Outputs chronometer's countdown
 
-    :param user_timer: return value from `set_time_values()`
+    :param user_timer: return value from `set_time_lapse()`
     :type user_timer: list[int]
     """
     hours, minutes, seconds = user_timer
@@ -184,7 +186,7 @@ def main() -> None:
     """
     Executes main functions
     """
-    user_set_time: list[int] = set_time_values()
+    user_set_time: list[int] = set_time_lapse()
     start_chronometer(user_set_time)
     chronometer(user_set_time)
 
@@ -194,5 +196,3 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("Interrupted!")
-
-# print(LINE_UP, end=LINE_CLEAR)
