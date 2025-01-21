@@ -12,29 +12,6 @@ MIN_LIMIT: int = 59
 SEC_LIMIT: int = 59
 
 
-def max_time_measure(hour: int = 0, minute: int = 0, second: int = 0) -> bool:
-    """
-    Prevents user to enter invalid time values
-
-    :param hour: User entry value
-    :type hour: int
-    :param minute: User entry value
-    :type minute: int
-    :param second: User entry value
-    :type second: int
-    :return: True | False
-    :rtype: bool
-    """
-    if hour > HR_LIMIT:
-        return False
-    if minute > MIN_LIMIT:
-        return False
-    if second > SEC_LIMIT:
-        return False
-
-    return True
-
-
 def check_unit(unit: str, value: int, timer: list[int]) -> bool | None:
     """
     Verifies if entered value by user do not exceed time limit
@@ -53,15 +30,15 @@ def check_unit(unit: str, value: int, timer: list[int]) -> bool | None:
 
     match unit:
         case 'hours':
-            if max_time_measure(hour=int(value)) is True:
+            if value <= HR_LIMIT:
                 timer.append(int(value))
                 valid = True
         case 'minutes':
-            if max_time_measure(minute=int(value)) is True:
+            if value <= MIN_LIMIT:
                 timer.append(int(value))
                 valid = True
         case 'seconds':
-            if max_time_measure(second=int(value)) is True:
+            if value <= SEC_LIMIT:
                 timer.append(int(value))
                 valid = True
 
