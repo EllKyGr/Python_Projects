@@ -5,8 +5,8 @@ over printing as a list. It also provides sound cues.
 
 import time
 
-LINE_UP: str = "\033[1A"
-LINE_CLEAR: str = "\x1b[2K"
+LINE_UP: str = "\033[1A"  # Places the cursor at the beginning of the line
+LINE_CLEAR: str = "\x1b[2K"  # Erases the line
 HR_LIMIT: int = 24
 MIN_LIMIT: int = 59
 SEC_LIMIT: int = 59
@@ -67,12 +67,17 @@ def register_valid_time(set_unit: str) -> list[int]:
 
     for unit in measure:
         while True:
+            print(LINE_UP, end=LINE_CLEAR)
             value = input(f"Enter {unit}: ")
             if not value.isdigit():
+                print(LINE_UP, end=LINE_CLEAR)
                 print("Invalid. Only enter numbers!")
+                time.sleep(1)
                 continue
             if not check_unit(unit, int(value), timer) is True:
+                print(LINE_UP, end=LINE_CLEAR)
                 print(f"Value exceed max number of {unit}!")
+                time.sleep(1)
                 continue
             if timer[0] == 24:
                 timer += [0, 0]
@@ -92,6 +97,7 @@ def set_time_lapse() -> list[int]:
     user_input: str | None = None
     timer: list[int] = []
     while True:
+        print(LINE_UP, end=LINE_CLEAR)
         user_input = input("Enter hours, minutes or seconds [H/M/S] ")
         if user_input == "H":
             timer = register_valid_time('H')
@@ -100,7 +106,9 @@ def set_time_lapse() -> list[int]:
         elif user_input == "S":
             timer = register_valid_time('S')
         else:
+            print(LINE_UP, end=LINE_CLEAR)
             print("Invalid command!")
+            time.sleep(1)
             continue
         break
 
@@ -119,6 +127,8 @@ def start_chronometer(user_set_time: list[int]):
     str_hour = "0" + str(hours) if hours < 10 else str(hours)
     str_min = "0" + str(minutes) if minutes < 10 else str(minutes)
     str_sec = "0" + str(seconds) if seconds < 10 else str(seconds)
+
+    print(LINE_UP, end=LINE_CLEAR)
 
     for _ in range(2):
         print(f"\a{str_hour}:{str_min}:{str_sec}", end="\r")
@@ -175,4 +185,4 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("Interrupted!")
+        print(LINE_CLEAR, "\rInterrupted!")
