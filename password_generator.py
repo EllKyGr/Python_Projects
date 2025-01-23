@@ -34,7 +34,7 @@ def pass_gen(length: int, numbers: bool = True, special: bool = True) -> str:
             characters.append(choice(SPECIAL_CHARS))
 
     shuffle(characters)
-    password: str = ''.join(reversed(''.join(characters)))
+    password: str = ''.join(reversed(characters))
 
     return password
 
